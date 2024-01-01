@@ -1,11 +1,27 @@
-import os
+import os,time
 from flask import Flask, jsonify,request
 from flask_sqlalchemy import SQLAlchemy
+from waitforit import wait_for_postgres
+
+wait_for_postgres(
+    host='postgresdb',
+    port=5432,
+    user='vas',
+    password='password',
+    database='mydb',
+    max_attempts=30,
+    delay=2
+)
+
+# Continue with the rest of your application logic
+print("PostgreSQL is ready. Continue with the application.")
+
+
 
 app = Flask(__name__)
-
+time.sleep(10)
 # Configuration for the SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///example.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vas:password@postgresdb/mydb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Create the SQLAlchemy instance

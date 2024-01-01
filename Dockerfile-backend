@@ -1,18 +1,10 @@
-
-
 FROM python:3
-
 
 RUN mkdir -p /opt/backend
 WORKDIR  /opt/backend
-# RUN python -3 -m venv .venv
-# RUN python3 -m venv .venv
 
-# RUN . .venv/bin/activate
-# RUN source . .venv/bin/activate
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-# RUN pip install --no-cache-dir -r requirements.txt
-COPY backend/app.py ./ 
+COPY backend/*.py ./ 
 
-CMD [ "python", "app.py"]
+CMD ["python", "app.py"]

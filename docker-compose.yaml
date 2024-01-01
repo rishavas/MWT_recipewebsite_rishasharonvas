@@ -13,7 +13,7 @@ services:
     networks:
       - foodrecepies_net
 
-  todobackend:
+  backend:
     image: backend:v0.1
     build: 
       context: .
