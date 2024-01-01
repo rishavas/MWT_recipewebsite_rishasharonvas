@@ -1,0 +1,40 @@
+version: '3.1'
+
+services:
+
+  postgresdb:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=vas
+      - POSTGRES_DB=mydb
+    networks:
+      - foodrecepies_net
+
+  todobackend:
+    image: backend:v0.1
+    build: 
+      context: .
+      dockerfile: Dockerfile-backend
+    ports:
+      - 5000:5000
+    depends_on:
+      - postgresdb
+    networks:
+      - foodrecepies_net
+
+#   todoui:
+#     image: todoui:v0.1
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-todoui
+#     ports:
+#       - 8090:8090
+#     networks:
+#       - todonet
+
+networks:
+  foodrecepies_net:
+    driver: bridge  
