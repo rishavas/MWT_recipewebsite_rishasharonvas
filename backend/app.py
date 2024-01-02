@@ -2,6 +2,7 @@ import os,time
 from flask import Flask, jsonify,request
 from flask_sqlalchemy import SQLAlchemy
 from waitforit import wait_for_postgres
+from flask_cors import CORS
 
 wait_for_postgres(
     host='postgresdb',
@@ -19,7 +20,8 @@ print("PostgreSQL is ready. Continue with the application.")
 
 
 app = Flask(__name__)
-time.sleep(10)
+CORS(app)  # Enable CORS for all routes
+
 # Configuration for the SQLite database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vas:password@postgresdb/mydb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -49,6 +51,10 @@ def read_recipes(db):
         recipe_list.append({'id': recipe.id, 'title': recipe.title, 'ingredients': recipe.ingredients})
     return jsonify({'recipes': recipe_list})
 
+def read_recipes_by_id(db, id):
+    recipe=Recipe.query.get(id)
+    return jsonify({'id': recipe.id, 'title': recipe.title, 'ingredients': recipe.ingredients})
+
 def update_recipes(db,id,title,ingredients):
     recipe=Recipe.query.get(id)
     # Update user information based on the request data
@@ -66,10 +72,14 @@ def delete_recipes(db,id):
 
 
 @app.route("/",methods=['GET'])
-def home_page():
+def get_all_recipes():
     # recipe=insert_recipe(db,"Maggi","pwofjuerhfuqvyrf")
     return read_recipes(db)
 
+@app.route('/recipe/<int:id>',methods=['GET'])
+def get_recipe(id):
+    return read_recipes_by_id(db, id)
+    
 
 @app.route('/add',methods=['POST'])
 def add_new_recipe():

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Add Recipe</h2>
+
+<form id="myForm">
+  <label for="rtitle">Title:</label><br>
+  <input type="text" id="rtitle" name="title" value=""><br>
+  <label for="ringredient">Ingredients:</label><br>
+  <!-- Use <textarea> for multiline input -->
+  <textarea id="ringredient" name="ingredients" rows="4"></textarea><br><br>
+  <input type="submit" value="Submit" onclick="submitForm()">
+</form> 
+
+<script>
+    function submitForm() {
+        // Get form data
+        var formData = new FormData(document.getElementById("myForm"));
+        console.log(formData)
+        // Make an HTTP POST request to the backend
+        fetch('{{backend_url}}/add', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => window.location.href="/")
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+
+
+{% endblock %}

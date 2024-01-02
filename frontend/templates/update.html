@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<h2>Update Recipe</h2>
+
+<form id="myForm">
+  <label for="rtitle">Title:</label><br>
+  <input type="text" id="rtitle" name="title" value=""><br>
+  <label for="ringredient">Ingredients:</label><br>
+  <!-- Use <textarea> for multiline input -->
+  <textarea id="ringredient" name="ingredients" rows="4"></textarea><br><br>
+  <input type="submit" value="Submit" onclick="submitForm()">
+</form> 
+
+<script>
+    var recipeId = 0;
+    async function fetchDataAndUpdateForm() {
+        // Extract recipe ID from the URL
+        recipeId = window.location.pathname.split('/').pop();
+
+        try {
+            // Fetch recipe data from the backend
+            const response = await fetch(`{{backend_url}}/recipe/${recipeId}`);
+            const data = await response.json();
+
+            // Populate form fields with fetched data
+            document.getElementById('rtitle').value = data.title;
+            document.getElementById('ringredient').value = data.ingredients;
+        } catch (error) {
+            console.error('Error fetching recipe data:', error);
+        }
+    }
+
+    function submitForm() {
+        // Get form data
+        var formData = new FormData(document.getElementById("myForm"));
+        console.log(formData)
+        // Make an HTTP PUT request to the backend
+        fetch(`{{backend_url}}/update/${recipeId}`, {
+            method: 'PUT',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => window.location.href="/")
+        .catch(error => console.error('Error:', error));
+    }
+    document.addEventListener('DOMContentLoaded', fetchDataAndUpdateForm);
+</script>
+
+{% endblock %}

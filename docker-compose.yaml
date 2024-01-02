@@ -20,20 +20,26 @@ services:
       dockerfile: Dockerfile-backend
     ports:
       - 5000:5000
+    volumes:
+      - ./backend:/opt/backend
     depends_on:
       - postgresdb
     networks:
       - foodrecepies_net
 
-#   todoui:
-#     image: todoui:v0.1
-#     build:
-#       context: .
-#       dockerfile: Dockerfile-todoui
-#     ports:
-#       - 8090:8090
-#     networks:
-#       - todonet
+  frontend:
+    image: frontend:v0.1
+    build:
+      context: .
+      dockerfile: Dockerfile-frontend
+    ports:
+      - 8080:5000
+    volumes:
+      - ./frontend:/opt/frontend
+    environment:
+      BACKEND_URL: http://localhost:5000
+    networks:
+      - foodrecepies_net
 
 networks:
   foodrecepies_net:

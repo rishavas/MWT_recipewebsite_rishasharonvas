@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1>Recipes</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Ingredients</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="recipeTableBody"></tbody>
+    </table>
+    
+    <script>
+        // Function to fetch recipe data from the backend
+        async function fetchRecipeData() {
+            try {
+                const response = await fetch('{{ backend_url }}');
+                const data = await response.json();
+                return data.recipes;
+            } catch (error) {
+                console.error('Error fetching recipe data:', error);
+                return [];
+            }
+        }
+
+        // Function to create the table rows
+
+    // Function to create the table rows with update and delete buttons
+    function createTableRows(data) {
+        const tableBody = document.getElementById('recipeTableBody');
+
+        data.forEach(recipe => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).textContent = recipe.id;
+            row.insertCell(1).textContent = recipe.title;
+            row.insertCell(2).textContent = recipe.ingredients;
+
+            // Update button
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Update';
+            updateButton.onclick = () => {
+                window.location.href = `/update/${recipe.id}`;
+            };
+            row.insertCell(3).appendChild(updateButton);
+
+            // Delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => {
+                // Perform a POST request to delete the recipe
+                fetch(`{{backend_url}}/delete/${recipe.id}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            // Reload the page after successful deletion
+                            window.location.reload();
+                        } else {
+                            console.error('Failed to delete recipe');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting recipe:', error);
+                    });
+            };
+            row.insertCell(4).appendChild(deleteButton);
+        });
+    }
+
+        // Fetch recipe data and create the table rows
+        async function initialize() {
+            const recipesData = await fetchRecipeData();
+            createTableRows(recipesData);
+        }
+
+        // Call initialize when the DOM is ready
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+
+{% endblock %}
